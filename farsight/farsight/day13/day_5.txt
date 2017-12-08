@@ -1,0 +1,169 @@
+【1】有名管道
+ 属性：有名管道可以使互不相关的两个进程互相通信
+ 
+ 特点：有名管道可以通过路径名来指出，并且在文件系统中可见
+       管道中的数据在内存
+	   
+ 使用：通过文件IO来操作有名管道，不支持如lseek() 操作 
+       先创建，再打开
+	   
+ 
+ 函数原型：int mkfifo(const char *pathname, mode_t mode);
+ 功能：创建一个有名管道
+ 参数：pathname  路径名
+       mode  管道执行权限  mode & ~umask
+	   
+ 返回值：成功  0
+         失败  -1
+		 
+ int open(const char *pathname, int flags);
+ 参数：flags  O_RDWR
+ 
+ 
+【2】信号
+ 信号可以直接进行用户空间进程和内核进程之间的交互，属于一种异步通信
+ 
+ 信号类型：
+ 2) SIGINT	  ctrl + c   终止进程
+ 3) SIGQUIT   ctrl + \   终止进程
+ 9) SIGKILL              终止进程
+ 10) SIGUSR1             用户自定义信号
+ 13) SIGPIPE             终止进程
+ 14) SIGALRM             终止进程
+ 17) SIGCHLD             子进程状态发生改变，父进程收到此信号
+ 19) SIGSTOP             停止进程
+ 20) SIGTSTP  ctrl + z  停止进程
+ 
+ 用户进程对信号的响应方式：
+ 忽略信号：对信号不做任何处理，但是有两个信号不能忽略：即SIGKILL及SIGSTOP。
+ 捕捉信号：定义信号处理函数，当信号发生时，执行相应的处理函数。
+ 执行缺省操作：Linux对每种信号都规定了默认操作 
+ 
+ 函数原型：typedef void (*sighandler_t)(int);        《=====》   typedef void (*)(int) sighandler_t;
+                                                                 sighandler_t signal(int signum, sighandler_t handler);
+
+		   void (*signal(int signum, void(*handler)(int)))(int);
+
+ 功能：根据信号的类型做出对应的处理
+ 参数: signum  信号的编号
+       handler  信号处理函数    用户自定义
+	                            SIG_IGN  忽略信号
+								SIG_DFL  执行信号的默认操作
+	   
+ 返回值：成功  函数指针
+         失败  SIG_ERR
+		 
+	
+ 函数原型：int kill(pid_t pid, int sig);
+ 功能：向任何一个进程或进程组发送一个信号
+ 参数： pid  >0   指定进程号发送
+        pid  == 0   发送给调用进程所在进程组中的每一个进程
+		pid  == -1  发送给系统中可以发送的所有进程
+		pid  < -1   发送给进程组ID等于-pid下的所有进程
+		
+		
+		sig  信号的类型 
+ 返回值：成功  0
+         失败  -1
+		 
+ 函数原型：int raise(int sig);
+ 功能：发送信号给调用进程
+ 参数：sig  信号的类型
+ 返回值：成功  0
+         失败  非0
+		 
+ 函数原型：unsigned int alarm(unsigned int seconds);
+ 功能：时钟函数，进程收到SIGALRM信号
+ 参数：seconds  秒数
+ 返回值：成功   0
+                上一次执行alarm函数剩余的秒数
+		 
+		 
+【3】system V  IPC
+ 消息队列:在内核空间创建队列，完成添加消息，移除消息
+
+ 消息队列的操作包括创建或打开消息队列、添加消息、读取消息和控制消息队列
+ 
+ 创建key值：
+ 
+ key_t ftok(const char *pathname, int proj_id);
+ 功能：生成一个key值
+ 参数：pathname  路径名
+       prij_id   'a' 'b'
+	   
+ 返回值：成功  key值
+         失败  -1
+
+ 1）创建或打开消息队列使用的函数是msgget，这里创建的消息队列的数量会受到系统消息队列数量的限制
+    函数原型：int msgget(key_t key, int msgflg);
+	功能：创建或打开消息队列
+	参数： key   key值
+	       msgflg    IPC_CREAT  消息队列不存在，创建
+		             IPC_EXCL   消息队列存在，报错  EEXIST
+					 mode       消息队列执行权限
+					 
+					 IPC_CREAT|IPC_EXCL|0664   创建并打开消息队列
+					 
+					 0664   打开消息队列 
+					 
+	返回值：成功   消息队列标识符
+
+ 2）添加消息使用的函数是msgsnd，按照类型把消息添加到已打开的消息队列末尾
+    函数原型：int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg);
+	功能：添加一个消息到队列的末尾
+	参数：msqid  消息队列标识符
+	      msgp   
+		         struct msgbuf {
+                     long mtype;       /* message type, must be > 0 */  消息的类型 
+                     char mtext[1];    /* message data */  消息正文
+                };
+         msgsz   消息正文的长度            sizeof(struct msgbuf) - sizeof(long)
+		 msgflg   0  默认操作
+	返回值：成功   0
+	        失败   -1
+ 
+ 3）读取消息使用的函数是msgrcv，可以按照类型把消息从消息队列中取走
+    函数原型：ssize_t msgrcv(int msqid, void *msgp, size_t msgsz, long msgtyp, int msgflg);
+    功能：移除消息队列中的消息
+	参数：msqid  消息队列标识符
+	      msgp   与msgsnd发送结构体保持一致
+		  msgsz  消息正文的长度
+		  msgtyp  消息的类型     
+		          0  读取消息队列中的第一个消息
+				  >0  读取消息队列中类型等于msgtyp的第一个消息
+                  <0  读取消息队列中类型大于或等于msgtyp的绝对值，且类型最小的一个消息 		 
+		 
+		  msgflg  0    默认操作
+	返回值：成功  消息的长度
+	        失败  -1
+ 4）控制消息队列使用的函数是msgctl，它可以完成多项功能。
+    函数原型：int msgctl(int msqid, int cmd, struct msqid_ds *buf);
+	功能：消息队列控制函数
+	参数：msqid  消息队列的标识符
+	      IPC_STAT  获取该消息队列的属性信息
+		  IPC_SET   设置该消息队列的属性
+		  IPC_RMID   从系统中删除消息队列
+		  
+		  buf  描述消息队列属性的结构体
+		 
+	返回值：成功	0
+            失败    -1	
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+
+
+
+ 

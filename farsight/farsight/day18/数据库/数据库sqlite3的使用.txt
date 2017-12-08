@@ -1,0 +1,115 @@
+1-- 安装数据库：
+         sudo dpkg -i  *.deb
+2-- 创建数据库
+         sqlite3  stu.db
+3-- sqlite命令
+         系统命令 以 "."开头
+         普通命令 ，以";"结束 
+
+         .schema  查看表的结构
+         .quit    退出数据库
+         .exit    退出数据库
+         .help    查看帮助信息
+         .databases 查看数据库
+         .tables  显示数据库中所有的表的表名
+4-- sqlite3 的使用
+    1-- 创建一张表
+       create  table 表名(字段名称1 字段类型，字段名称2  字段类型， ....);
+       create table stu(id int, name char, sex char , score int);
+    2-- 向表中插入一条记录
+       insert into 表名 values （字段值1，字段值2，...）；
+       insert into stu values(1001, 'zhangsan', 'm', 89);
+       insert into stu (id, name, sex，score) values(1002, 'lisi', 'm', 99);
+    3-- 查询记录
+       select * from stu;                                    // 查找所有的记录
+       select * from stu where id=1001;                      // 查找符号条件的记录
+       select * from stu where id=1001 and name='zhangsan';  // 字符串需要加引号
+       select * from stu where name = 'zhangsan' or score=92; 
+    4-- 删除记录
+       delete from stu where id=1004;
+    5-- 更新记录
+       update stu set score=98 where id=1003;
+    6-- 删除一张表
+       drop  table  stu;
+    7-- 添加一列
+        alter table stu add column score int;
+    8-- 删除一列
+        sqlite3 不允许直接删除一列
+        1)先创建一张新表
+           create table stu1 as select id , name from stu;
+        2)删除原来的旧表
+           drop table stu;
+        3)对新表重命名
+           alter table stu1 rename to stu;
+    9-- 数据库主键（既设置的数据将会是唯一存在的）
+        create table usr(name text primary key , passwd text);
+5-- sqlite3 API 函数接口
+    
+	（1）int sqlite3_open(
+         const char *filename,   /* Database filename (UTF-8) */
+         sqlite3 **ppDb          /* OUT: SQLite db handle */
+         );
+    功能：打开一个数据库
+    参数：filename   数据库名字
+          ppdb      操作数据库的指针，句柄。
+    返回值：成功 SQLITE_OK , 失败 error_code
+
+    （2）const char *sqlite3_errmsg(sqlite3* db);
+    功能：获取错误信息描述
+    
+    （3）int sqlite3_close(sqlite3* db);
+    功能：关闭一个数据库
+    
+    （4）int sqlite3_exec(
+         sqlite3* db,                                  /* An open database */
+         const char *sql,                           /* SQL to be evaluated */
+         int (*callback)(void*,int,char**,char**),  /* Callback function */
+         void * arg,                             /* 1st argument to callback */
+         char **errmsg                          /* Error msg written here */
+        );
+    功能：执行一条sql语句
+    参数：db  数据库的句柄指针
+          sql  将要被执行sql语句
+          callback 回调函数, 只有在查询语句时，才给回调函数传参
+          arg  为callback 传参的
+          errmsg 错误信息的地址
+    返回值：成功 SQLITE_OK
+            出错 errcode 错误码
+    ***********************************************************
+    int (*callback)(void* arg ,int  ncolumn ,char** f_value,char** f_name)
+    功能：得到查询结果
+    参数：arg  为回调函数传递参数使用的
+          ncolumn  记录中包含的字段的数目
+          f_value  包含每个字段值的指针数组
+          f_name   包含每个字段名称的指针数组
+    返回值：成功 0，出错 非0
+    *********************************************************
+
+   （5）int sqlite3_get_table(
+     sqlite3 *db,          /* An open database */
+     const char *zSql,     /* SQL to be evaluated */
+     char ***pazResult,    /* Results of the query */
+     int *pnRow,           /* Number of result rows written here */
+     int *pnColumn,        /* Number of result columns written here */
+     char **pzErrmsg       /* Error msg written here */
+     );
+    功能：查询数据库，它会创建一个新的内存区域来存放查询的结果信息
+    参数：db       数据库操作句柄
+          sql      数据库的sql语句
+          azResult 查询的结果
+          nRow     行数
+          nColumn  列数
+          errmsg   错误消息
+	返回值：
+	     成功 0
+         出错 errcode
+	nrow的值为查询到的符合条件的记录数(不包括字段名)。
+	ncolumn的值为查询到的符合条件的字段数。
+	注意：nrow的值不包括字段名，如果打印时用for (i = 0; i < nrow; i++)会打印出字段名，但是会少打印出一条符合条件的记录。
+              因此打印时要用 for (i = 0; i <nrow + 1; i++);将包括字段名在内的数据都打印出来。
+
+   		
+   （6）void sqlite3_free_table(char **result);
+	功能：释放内存
+
+ 

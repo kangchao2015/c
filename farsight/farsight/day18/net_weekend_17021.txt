@@ -1,0 +1,190 @@
+*******************************day_4*************************
+************本地通信*****************
+【1】概念
+	socket同样可以用于本地通信
+
+	创建套接字时使用本地协议PF_UNIX(或PF_LOCAL)。
+
+	分为流式套接字和用户数据报套接字
+
+	和其他进程间通信方式相比使用方便、效率更高
+
+	常用于前后台进程通信
+【2】本地信息结构体 sockaddr_un 
+	#include <sys/un.h>
+	struct sockaddr_un
+	{
+		__SOCKADDR_COMMON (sun_);
+			===> #define __SOCKADDR_COMMON(sa_prefix) \                                                                           
+							sa_family_t sa_prefix##family
+							====>   sa_family_t sun_family;   //协议族 AF_UNIX
+
+		char sun_path[108];   //路径名
+	};
+	
+	例子：
+		struct sockaddr_un serveraddr;
+		serveraddr.sun_family = AF_UNIX;
+		strcpy(serveraddr.sun_path, "server_socket");
+【3】TCP本地通信
+	流程：
+	
+	服务器端：
+	创建套接字 socket( )
+	填充本地信息结构体 sockaddr_un
+	将套接字与本地信息结构体进行绑定 bind( )
+	将套接字设置为监听模式 listen( )
+	阻塞等待客户端连接请求 accept( )
+	进行通信 recv( )/send( )
+	
+	客户端：
+	创建套接字 socket( )
+	填充本地信息结构体 sockaddr_un
+	发送客户端连接请求 connect( )
+	进行通信 send( )/recv( )
+【4】UDP本地通信
+	流程：
+	
+	服务器端：
+	创建套接字 socket( )
+	填充本地信息结构体 sockaddr_un
+	将套接字与本地信息结构体进行绑定 bind( )
+	进行通信 recvfrom( )/sendto( )
+	
+	客户端：
+	创建套接字 socket( )
+	填充服务器本地信息结构体 sockaddr_un
+	填充客户端本地信息结构体 sockaddr_un
+	将套接字与客户端本地信息结构体进行绑定 bind( )  注意：如果不绑定，则客户端接收不到服务器发送的数据
+	进行通信 sendto( )/recvfrom( )	
+***********************数据库************************		
+1-- 安装数据库：
+         sudo dpkg -i  *.deb
+2-- 创建数据库
+         sqlite3  stu.db
+		    必须指定数据库的名字
+3-- sqlite命令
+         系统命令 以 "."开头
+         普通命令 ，以";"结束 
+
+         .schema  查看表的结构
+         .quit    退出数据库
+         .exit    退出数据库
+         .help    查看帮助信息
+         .databases 查看数据库
+         .tables  显示数据库中所有的表的表名
+4-- sqlite3 的使用
+    1-- 创建一张表
+       create  table 表名(字段名称1 字段类型，字段名称2  字段类型， ....);
+       create table stu(id int, name char, sex char , score int);
+    2-- 向表中插入一条记录
+       insert into 表名 values （字段值1，字段值2，...）；
+       insert into stu values(1001, 'zhangsan', 'm', 89);
+       insert into stu (id, name, sex，score) values(1002, 'lisi', 'm', 99);
+    3-- 查询记录
+       select * from stu;                                    // 查找所有的记录
+       select * from stu where id=1001;                      // 查找符号条件的记录
+       select * from stu where id=1001 and name='zhangsan';  // 字符串需要加引号
+       select * from stu where name = 'zhangsan' or score=92; 
+    4-- 删除记录
+       delete from stu where id=1004;
+    5-- 更新记录
+       update stu set score=98 where id=1003;
+    6-- 删除一张表
+       drop  table  stu;
+    7-- 添加一列
+        alter table stu add column score int;
+    8-- 删除一列
+        sqlite3 不允许直接删除一列
+        1)先创建一张新表
+           create table stu1 as select id , name from stu;
+        2)删除原来的旧表
+           drop table stu;
+        3)对新表重命名
+           alter table stu1 rename to stu;
+    9-- 数据库主键（既设置的数据将会是唯一存在的）
+        create table usr(name text primary key , passwd text);
+5-- sqlite3 API 函数接口
+    
+	（1）int sqlite3_open(
+         const char *filename,   /* Database filename (UTF-8) */
+         sqlite3 **ppDb          /* OUT: SQLite db handle */
+         );
+    功能：打开一个数据库
+    参数：filename   数据库名字
+          ppdb      操作数据库的指针，句柄。
+    返回值：成功 SQLITE_OK , 失败 error_code
+	
+	例子：
+		sqlite3 *db;
+		if(sqlite3_open("stu.db", &db) != SQLITE_OK)
+		{
+			printf("%s\n", sqlite3_errmsg(db));
+		}
+
+    （2）const char *sqlite3_errmsg(sqlite3* db);
+    功能：获取错误信息描述
+    
+    （3）int sqlite3_close(sqlite3* db);
+    功能：关闭一个数据库
+    
+    （4）int sqlite3_exec(
+         sqlite3* db,                                  /* An open database */
+         const char *sql,                           /* SQL to be evaluated */
+         int (*callback)(void*,int,char**,char**),  /* Callback function */
+         void * arg,                             /* 1st argument to callback */
+         char **errmsg                          /* Error msg written here */
+        );
+    功能：执行一条sql语句
+    参数：db  数据库的句柄指针
+          sql  将要被执行sql语句
+          callback 回调函数, 只有在查询语句时，才给回调函数传参
+          arg  为callback 传参的
+          errmsg 错误信息的地址
+    返回值：成功 SQLITE_OK
+            出错 errcode 错误码
+    ***********************************************************
+    int (*callback)(void* arg ,int  ncolumn ,char** f_value,char** f_name)
+    功能：得到查询结果
+    参数：arg  为回调函数传递参数使用的
+          ncolumn  记录中包含的字段的数目
+          f_value  包含每个字段值的指针数组
+          f_name   包含每个字段名称的指针数组
+    返回值：成功 0，出错 非0
+    *********************************************************
+	例子：
+		char *errmsg;
+		if(sqlite3_exec(db, "create table stu(id int, name char, score int)", NULL, NULL, &errmsg) != SQLITE_OK)
+		{
+			printf("%s\n", errmsg);
+		}
+	
+   （5）int sqlite3_get_table(
+     sqlite3 *db,          /* An open database */
+     const char *zSql,     /* SQL to be evaluated */
+     char ***pazResult,    /* Results of the query */
+     int *pnRow,           /* Number of result rows written here */
+     int *pnColumn,        /* Number of result columns written here */
+     char **pzErrmsg       /* Error msg written here */
+     );
+    功能：查询数据库，它会创建一个新的内存区域来存放查询的结果信息
+    参数：db       数据库操作句柄
+          sql      数据库的sql语句
+          azResult 查询的结果
+          nRow     行数
+          nColumn  列数
+          errmsg   错误消息
+	返回值：
+	     成功 0
+         出错 errcode
+	nrow的值为查询到的符合条件的记录数(不包括字段名)。
+	ncolumn的值为查询到的符合条件的字段数。
+	注意：nrow的值不包括字段名，如果打印时用for (i = 0; i < nrow; i++)会打印出字段名，但是会少打印出一条符合条件的记录。
+              因此打印时要用 for (i = 0; i <nrow + 1; i++);将包括字段名在内的数据都打印出来。
+
+   		
+   （6）void sqlite3_free_table(char **result);
+	功能：释放内存
+
+ 		
+		

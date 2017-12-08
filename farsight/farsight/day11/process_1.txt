@@ -1,0 +1,212 @@
+【1】进程的概念
+     进程是一个程序的一次执行的过程
+
+【2】进程与程序的区别
+     程序是静态的，它是一些保存在磁盘上的指令的有序集合，没有任何执行的概念
+     进程是一个动态的概念，它是程序执行的过程，包括创建、调度和消亡
+
+【3】进程的类型
+     1-- 交互进程：该类进程是由shell控制和运行的。交互进程既可以在前台运行，也可以在后台运行。
+         前台进程：既可以有输出，又可以有输入
+         后台进程：./a.out &
+                   只可以有输出，不可以有输入
+
+     批处理进程：该类进程不属于某个终端，它被提交到一个队列中以便顺序执行。
+
+     守护进程：该类进程在后台运行。它一般在Linux启动时开始执行，系统关闭时才结束。
+
+【4】查看进程信息
+     ps  -axj
+              process snapshot  进程快照
+
+
+     PPID          PID      PGID       SID     TTY      TPGID  STAT   UID   TIME COMMAND
+     父亲进程     儿子进程  进程组id   会话id  终端            状态   用户id 时间 命令名称
+
+    tty  ?  大多数情况小，表示进程属于一个守护进程
+    进程的状态：  R  运行态
+                  +  进程前台运行
+                  S  睡眠态
+                  s  表示当前进程是会话组，组长
+                  l  当前进程中，包含了线程
+                  N  进程优先级低
+                  <  进程的高优先级
+                  T  停止态， ctrl + z
+                  X  死亡态，不可见
+                  Z  僵尸态， 进程资源task_struct 没有被系统回收
+
+
+       D    uninterruptible sleep (usually IO) 不可中断睡眠态
+       R    running or runnable (on run queue)
+       S    interruptible sleep (waiting for an event to complete)
+       T    stopped, either by a job control signal or because it is being traced.
+       X    dead (should never be seen)
+       Z    defunct ("zombie") process, terminated but not reaped by its parent.
+
+       For BSD formats and when the stat keyword is used, additional characters may be displayed:
+       <    high-priority (not nice to other users)
+       N    low-priority (nice to other users)
+       L    has pages locked into memory (for real-time and custom IO)
+       s    is a session leader
+       l    is multi-threaded (using CLONE_THREAD, like NPTL pthreads do)
+       +    is in the foreground process group.
+
+    运行态：此时进程或者正在运行，或者准备运行。
+
+    等待态：此时进程在等待一个事件的发生或某种系统资源。
+           可中断
+           不可中断
+
+    停止态：此时进程被中止。
+
+    僵尸态：这是一个已终止的进程，但还在进程向量数组中占有一个task_struct结构
+
+【5】信号 kill -l
+      2) SIGINT	   ctrl +c
+      3) SIGQUIT   ctrl + \
+      9) SIGKILL   kill -9  （kill 发信号）  , 此信号不能被注册
+      19) SIGSTOP   暂停信号  ctrl + z  此信号不能被注册
+      18) SIGCONT   唤醒信号，使进程从停止太，变为运行态
+      14) SIGALRM   闹钟信号
+      20) SIGTSTP   暂停信号
+      17) SIGCHLD    当子进程的状态发生改变的时候，内核会给父亲进程发送此信号
+      10) SIGUSR1   用户自定义信号
+      12) SIGUSR2   用户自定义信号
+
+【6】
+     top  动态显示系统中的进程
+     top  大概每3秒钟刷新一次
+          shift + >  向下翻页
+          shift + <  向上翻页
+          q   退出
+
+     nice   按用户指定的优先级运行进程， 优先级 [-20 , 19)
+             nice  -n  -20  ./a.out    
+                      PR = NI + 20;
+
+     renice   改变正在运行进程的优先级
+            sudo  renice  -n  19  pid
+
+     kill   结束进程(包括后台进程)
+
+     bg  将挂起的进程在后台执行 
+            ctrl + z   将进程变成挂起
+            bg  1
+
+     fg  把后台运行的进程放到前台运行
+            fg  1
+
+【7】 pid_t fork(void);
+      功能：创建一个子进程
+      返回值：成功 在父亲进程中，返回值为儿子进程的pid号
+                   在儿子进程中， 返回值为0
+              出错-1
+
+     注意：子进程精确复制了父亲进程的内容，包括变量空间，二进制代码，
+            缓存区。
+           pid  是不会复制的。
+
+           儿子进程，fork之后开始执行。
+
+【8】如何产生僵尸进程？
+     儿子死了，父亲活着，并且父亲没有为儿子收尸，产生了僵尸进程。
+
+    1--  儿子活着，父亲先死，此时没有僵尸，父亲的尸体被bash终端回收了。
+     
+     父亲死亡之后，儿子进程成为孤儿进程，那么此时init进程为他的养父（与内核版本有关）。
+
+    2-- 使用wait函数 来回收尸体
+          pid_t wait(int *status);
+
+
+【9】  pid_t wait(int *status);
+       功能：阻塞回收子进程的资源
+       参数：status 状态值  NULL ， 儿子进程退出时状态值
+
+      pid_t waitpid(pid_t pid, int *status, int options);
+      功能：参考 课本
+
+
+strace  查看跟踪，进程的调用过程的。
+
+    
+
+作业：
+     父亲进程，先创建一个子进程，还需要在来子进程。
+
+     父亲
+    儿子1  儿子2
+     孙子
+      
+
+【10】退出一个进程
+   exit：void exit(int status);
+   功能：退出进程前，会清除缓存
+
+   _exit：void _exit(int status);
+   功能：退出进程前，不会清除缓存
+
+【11】exec函数族
+       int execl(const char *path, const char *arg, ...);
+       int execlp(const char *file, const char *arg, ...);
+       int execle(const char *path, const char *arg,
+                  ..., char * const envp[]);
+       int execv(const char *path, char *const argv[]);
+       int execvp(const char *file, char *const argv[]);
+       int execvpe(const char *file, char *const argv[],
+                  char *const envp[]);
+
+exec函数族提供了一种在进程中启动另一个程序执行的方法。
+   它可以根据指定的文件名或目录名找到可执行文件，
+   并用它来取代原调用进程的数据段、代码段和堆栈段。
+   在执行完之后，原调用进程的内容除了进程号外，其他全部都被替换了
+
+
+int execl(const char *path, const char *arg, ...);
+功能：path  可执行文件的路径
+      arg   占位符
+      ...   可变参
+返回值：成功0，出错 -1
+
+./a.out 参数1  参数2  
+
+int execlp(const char *file, const char *arg, ...);
+功能:p 表示的是环境变量的path路径
+
+ int execv(const char *path, char *const argv[]);
+
+p:代表的是从系统环境变量中找可执行文件
+l：参数以列表的形式，传递
+v：参数以 指针数组的形式传递
+e： 自定义环境变量，传递 
+
+系统经常使用此类函数。
+
+【12】守护进程
+守护进程，也就是通常所说的Daemon进程，是Linux中的后台服务进程。
+    它是一个生存期较长的进程，通常独立于控制终端并且周期性的执
+    行某种任务或等待处理某些发生的事件
+
+守护进程常常在系统启动时开始运行，在系统关闭时终止
+
+守护进程不受终端的影响。
+
+  守护进程编写流程：
+       1-- 创建子进程，父进程退出 
+
+       2-- 在子进程中创建新会话 
+
+       3-- 改变当前目录为根目录 
+
+       4-- 重设文件权限掩码 
+
+       5-- 关闭文件描述符 
+
+
+
+
+
+       
+
+
+

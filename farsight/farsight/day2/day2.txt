@@ -1,0 +1,280 @@
+复习：
+  1： 创建 /home/linux/dir1/dir2/dir
+         mkdir  -p   /home/linux/dir1/dir2/dir
+  2： 创建一个文件的方式
+     m1： vi  dest
+     m2： touch  filename
+     m3： > filename
+  3: alias: 起别名。
+     alias ： 列出已经有的别名
+     alias  command=‘command1’： command 的功能和command1相同。将command1起别名command。
+
+
+   
+  sha-bang： #！
+
+  1： 文件系统的逻辑结构
+     树型分层结构提供了一种自顶向下的查询方法。将根（/）作为整个文件系统的惟一起点，
+     其他所有目录都从该点出发
+    补充： linux命令常放置在 /bin , /sbin , /usr/bin , /usr/sbin .
+     命令which ： 查看指定命令的存放位置。
+     /bin： 存放系统中最常用的可执行文件（二进制）所有用户都可使用。
+     /sbin： 存放更多的可执行文件（二进制），包括系统管理、目录查询等关键命令文件。 只能有管理员使用的
+               命令存放在/sbin目录下。
+     /usr： 用于存放与系统用户直接有关的文件和目录，例如应用程序及支持它们的库文件。以下罗列了/usr中部分重要的目录。
+        --： /usr/bin: /usr/sbin: 存放用户命令。
+    /etc： 存放系统的所有配置文件，例如passwd存放用户账户信息，hostname存放主机名等
+    /dev: 存放所有设备文件，包括硬盘、分区、键盘、鼠标、USB、tty等
+             --: mount :挂载命令
+               mkdir -p /mnt/mycd 
+                mount  /dev/sdc1（U盘在linux下的映射名)  /mnt/mycd
+             --:umount:卸载命令
+                   umount  /mnt/mycd。
+    /mnt：该目录通常用于作为被挂载的文件系统的挂载点
+
+    /proc:存放所有标志为文件的进程，它们是通过进程号或其他的系统动态信息进行标识，例如cpuinfo文件存放CPU当前工作状态的数据
+
+   2:绝对路径和相对路径： 起始点不同
+        绝对路径： 以/目录为起始点
+        相对路径： 以当前（pwd来查看）目录为起始点。
+
+   3：链接文件：
+       链接文件就类似于微软Windows的快捷方式，只保留目标文件的地址，而不占用存储空间
+       
+       ln：创建链接文件
+      硬链接：是利用Linux中为每个文件分配的物理编号——inode建立链接，其实所有链接文件的inode相同。
+          ln  源文件  连接文件
+     软链接（符号链接）是利用文件的路径名建立链接
+            ln -s  源文件路径   链接文件名。
+
+。          ln -s ./1.txt  s1.txt
+            ln -s  /home/linux/1.txt  s2.txt
+   4: 归档文件是将一组文件或目录保存在一个文件中
+      压缩文件也是将一组文件或目录保存一个文件中，并按照某种存储格式保存在磁盘上，
+       所占磁盘空间比其中所有文件总和要少
+    归档命令： tar 
+          tar  cvf  目标文件（.tar)  源文件
+         tar  cvf  my.tar   目录1 文件2 。。。。：将多个目录或文件归档到一个文件中。
+      解档：
+          tar  xvf  my.tar
+     压缩：
+        -j：由tar生成归档，然后由bzip2压缩
+              tar  cvjf  my.tar.bz   源文件
+        -z：由tar生成归档，然后由gzip压缩
+             tar    cvzf   xxx.tar.xz   源文件
+
+     解压：
+           tar  xvjf   xxx.bz
+            tar  xvzf   xxx.xz
+    5：网络配置
+      ifconfig： 用于查看网卡信息。
+eth： 以太网卡。 eth0：第一个以太网卡。
+lo： 主机回环地址。
+
+      ifconfig  eth0  ip  netmask  netmask值。
+
+     ping： 用于查看网络链接状况
+
+             ping  ip地址/域名： 
+  一般用修改配置文件的方式来配置网络
+    --：  sudo vi /etc/network/interfaces 
+      此文件用了配置指定网卡的ip地址，子网掩码，网关。
+      两种配置方式：
+      ---：静态ip
+      ---：动态ip
+    --： sudo vi /etc/resolv.conf
+        此文件用了指定dns服务器。
+    --： 重启服务
+        sudo  /etc/init.d/networking  restart 
+
+                  shell脚本编程
+  6： Shell脚本语言是解释型语言
+      C语言是编译型语言
+Shell脚本的本质：
+      Shell命令的有序集合。
+
+  7：shell 编程的基本过程
+     step 1： vi  xxx.sh  
+           打开一个文件，编辑shell命令
+     step2： 保存，并赋予脚本（xxx.sh）可执行权限( u, g, o, a) 
+            chmod  775 xxx.sh  : 将xxx.sh文件的权限修改为 rwxrwxr-x 
+            chmod  u+x  xxx.sh  ： 给xxx.sh 的所属者增加可执行权限。
+     step3： 执行脚本
+            ./xxx.sh : 相对路径方式
+            /home/linux/.../xxx.sh: 绝对路径方式
+
+  8：Shell变量
+        Shell允许用户建立变量存储数据，但不支持数据类型（整型、字符、浮点型），将任何赋给变量的值都解释为一串字符
+        定义：
+               varname=varvalue //等号两边不能有空格。
+　　　　取消变量用unset命令。
+        取变量的值：　用＂＄＂符号
+　　　变量分为四种：
+　　　　－－：　　用户自定义变量 
+　　　　　　　　　生命周期：从脚本开始执行到变量定义处到脚本执行完成（或ｕｎｓｅｔ处）
+
+　　　　－－：　　位置变量即 命令行参数:shell 脚本自定义的变量用于存储命令行参数和脚本名。只可读，
+                    不能更改。 
+                  $0   与键入的命令行一样，包含脚本文件名
+                  $1,$2,……$9 ，${10}, ${11} ,${n}分别包含第一个到第n个命令行参数
+
+　　　　－－：　　预定义变量 
+                  $#   包含命令行参数的个数
+                  $@  包含所有命令行参数：“$1,$2,……$9”
+                  $?    包含前一个命令的退出状态
+                  $*    包含所有命令行参数：“$1,$2,……$9”
+                  $$    包含正在执行进程的ID号
+
+　　　　－－：　　环境变量
+　　　　　　　　　系统定义的变量。用于存储系统信息。
+　　　　　　　　　　HOME：用户的家目录，
+                   PATH：系统shell搜索路径。
+
+9：shell 程序由零或多条shell语句构成。 shell语句包括三类:说明性语句、功能性语句和结构性语句
+     --：说明性语句：
+         以#号开始到该行结束，不被解释执行
+     --：功能性语句: 
+         任意的shell命令、用户程序或其它shell程序。
+     --：结构性语句：
+         条件测试语句、多路分支语句、循环语句、循环控制语句等。
+10：常用的功能性语句：
+    echo ： 向标准输出打印字符串
+    read ： 从标准输入读取字符串
+    --read  var1 var2  var3
+       把读入行中的第一个单词(word)赋给var1, 第二个单词赋给var2， ……把其余所有的词赋给最后一个变量.
+   如果执行read语句时标准输入无数据, 则程序在此停留等侯, 直到数据的到来或被终止运行即阻塞等待用户输入信息。
+    expr： 算术运算命令
+     --： 用于进行简单的整数运算，包括加(+)、减（-）、乘（\*)、整除（/）和求模（%）等操作。
+        expr  num +  num : 命令和运算数之间有空格， 运算数和运算符之间有空格。
+ 11：保存命令的结果到变量
+    method1： sum=`command`
+    method2:  sum=$(commmand)
+     ``<==> $()
+12：test
+test语句可测试三种对象:用于判断逻辑值的真假。
+          字符串     整数     文件属性
+   --： 字符串测试
+        s1 = s2 	测试两个字符串的内容是否完全一样
+
+        s1 != s2	测试两个字符串的内容是否有差异
+
+        -z s1 	        测试s1 字符串的长度是否为0
+
+        -n s1 	        测试s1 字符串的长度是否不为0
+   test 结果如果为真则$? = 0, 结果为假$?= 非0 值一般为1
+    --: 整数测试
+        a -eq(equal) b 		测试a 与b 是否相等
+
+        a -ne(not equla) b	 测试a 与b 是否不相等
+
+        a -gt(great than) b 	测试a 是否大于b
+
+        a -ge b 		测试a 是否大于等于b
+
+        a -lt b 		测试a 是否小于b
+
+        a -le b 		测试a 是否小于等于b
+    --:测试文件
+     --：判断文件类型：（bcd-lsp）
+       -d name     	测试name 是否为一个目录（d)
+       -f name 	        测试name 是否为普通文件 (-)
+       -L name	        测试name 是否为符号链接 (l)
+       -b FILE
+       FILE exists and is block special( b）块设备文件 
+       -c FILE
+       FILE exists and is character special（c） 字符设备文件
+       -S FILE
+              FILE exists and is a socket（s） 套接字文件
+       -p name         测试name 是否为管道文件
+       
+      --： 判断文件权限
+       -r name 	        测试name 文件是否存在且为可读
+       -w name 	         测试name 文件是否存在且为可写
+       -x name 	        测试name 文件是否存在且为可执行
+       -s name 	        测试name 文件是否存在且其长度不为0
+       f1 -nt f2 	测试文件f1 是否比文件f2 更新
+       f1 -ot f2 	测试文件f1 是否比文件f2 更旧
+
+  
+ 可以使用[]来代替test
+13： 
+条件语句
+    1：  if    表达式
+         		then  命令表
+         fi     
+        
+     2： if    表达式
+         then 
+               命令表1
+                else
+               命令表2
+         fi     
+     3：if  expression1
+        then
+              c1
+        elif  expression1
+        then
+             c2  
+        else 
+             c3
+        fi   
+
+14： 多路分支语句 
+    case…esac 
+    case 变量  in 
+      模式1）
+         命令表1
+        ；；
+      模式2）
+         命令表2
+        ；；
+     模式3）
+         命令表3
+        ；；
+    esac
+
+15：循环语句
+   for…do…done
+      当循环次数已知或确定时,  使用for循环语句来多次执行一条或一组命令。  循环体由语句括号do和done来限定。格式为:                
+	for   变量名   in   单词表
+              do
+                      命令表
+               done
+        变量依次取单词表中的各个单词,  每取一次单词, 就执行一次循环体中的命令.  循环次数由单词表中的单词数确定. 命令表中的命令可以是一条, 也可以是由分号或换行符分开的多条。
+       如果单词表是命令行上的所有位置参数时, 可以在for语句中省略 “in  单词表” 部分。
+
+16:循环语句 
+     while…do…done
+
+语法结构为：      while     命令或表达式
+                              do
+                                       命令表
+                              done
+17：shell函数
+      函数：把完成固定功能、且多次使用的一组命令（语句）封装在一个函数里，
+            每当要使用该功能时只需调用该函数名即可。
+声明局部变量的格式：
+local   variable_name =value
+
+
+  1：共享文件夹：
+       虚拟机-》设置-》选项-》共享文件夹
+      设置完后
+     cd /mnt/hgfs/
+   2：快捷键设置
+       system-seting-》keyboard-》shortcuts-》navigation-》switch applications 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

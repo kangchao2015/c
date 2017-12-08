@@ -1,0 +1,649 @@
+********************************day_1*********************************
+*************基本概念***************
+【1】计算机与网络发展的7个阶段
+	1.	批处理（20世纪50年代）
+		是指实现将用户个数据装入卡带或者磁带。并有计算机按照一定的顺序读取，
+		是用户索要执行的这些程序和数据能够一并批量得到处理的方式。
+	2.	分时系统（20世纪60年代）
+		是指多个终端（包含鼠标、键盘、显示器等输入输出设备组成，最初还包括打印机）
+		与一台计算机连接，允许多个用户同时使用一台计算机的系统。
+		特性：多路性、独占性、交互性和及时性。
+	3．计算机之间的通信（20世纪70年代）
+	4.	计算机网络的产生（20世纪80年代） 
+	5.	互联网的普及（20世纪90年代）
+	6.	以互联网技术为中心的时代（2000年）
+	7.	从“单纯建立连接”到“安全建立连接”（2010年）
+【2】网络体系结构即指网络的层次结构和每层所使用协议的集合
+【3】
+	1. 协议
+		一组控制数据通信的规则。
+		三要素：语法（包括数据格式、编码及信号电平等）、
+				语义（包括用于协议和差错处理的控制信息）、
+				时序（包括速度匹配和排序）。
+	2. 标准
+		一致同意的规则。
+		分类：
+		事实上的标准：实际情况或者习惯
+		合法标准：法律或者规章制度
+	3. 标准化组织
+		缓慢发展：
+			ISO：国际标准化组织
+			ITU-T：国际电联-电信标准部
+			ANSI：美国国家标准化局
+			IEEE：电气电子工程师协会（主要是以太网、局域网方面的）
+			EIA：电子工业协会（物理传输标准、光钎传输）
+		快速发展：
+			论坛：帧中继论坛、ATM论坛
+			管理机构：FCC 联邦通信委员会
+
+		Internet标准：RFC
+【4】OSI开放系统互联模型
+	OSI模型是一个理想化的模型，尚未有完整的实现
+
+	应用层	应用程序：FTP、E-mail、Telnet
+	表示层	数据格式定义、数据转换/加密
+	会话层	建立通信进程的逻辑名字与物理名字之间的联系 
+	传输层	差错处理/恢复，流量控制，提供可靠的数据传输
+	网络层	数据分组、路由选择
+	数据链路层  数据组成可发送、接收的帧
+	物理层	传输物理信号、接口、信号形式、速率
+【5】7层通信
+	（1）应用层：指定特定应用的协议（比如发送和接受文件的软件按钮，
+			     发送者输入“早上好”并附上收件人，按下发送按钮，接受
+				 者收到信息会将其存储在硬盘或者非易失存储器（数据不会
+				 因为断电而丢失的一种存储设备）上，这些都是在应用层上的）
+	（2）表示层：设备固有数据格式和网络标准数据格式的转换（接受者和发送者
+				 如果使用的邮件客户端不一样，那么就会出现问题，如何实现用
+				 户之间的通信，那么就需要在表示层来起作用，使得在不同的客
+				 户端上拥有相同的网络格式）
+	（3）会话层：通信管理，负责建立或者断开通信连接（发送者一次性发送5份邮件，
+				那么接受者如何接受，是一次性接受所有的文件然后断开连接还是没接受一次就
+				断开，然后在此进行，发送者同理）
+	（4）传输层：管理两个节点（互联的网络中断）之间的数据传输。
+				负责可靠传输（确保数据被可靠地传送到目标地址）（确保发送者和接受者之间的通信，会话层负责决定建立连接和断开连接的时机，而传输层进行实际的建立和断开处理）
+	（5）网络层：地址管理与路由选择，
+				作用：在网络相互连接的环境中，将数据从发送端主机发送到接受端主机
+	（6）数据链路层：互连设备之间传送和识别数据帧
+	（7）物理层：以“0”、“1”代表的电压的高低、灯光的闪灭。界定连接器和网络的规格。
+【6】TCP/IP协议：传输控制/网际协议(Transfer Control Protocol/Internet Protocol) 又称作网络通讯协议
+	TCP/IP协议是Internet事实上的工业标准。
+	传输控制/网际协议(Transfer Control Protocol/Internet Protocol) 又称作网络通讯协议
+
+	应用层  TFTP，HTTP，SNMP，FTP，SMTP，DNS，Telnet 
+
+	传输层	TCP，UDP 
+
+	网络层	IP，ICMP，RIP，OSPF，BGP，IGMP 
+
+	物理层	SLIP，CSLIP，PPP，ARP，RARP，MTU  ISO2110，IEEE802.1,EEE802.2 
+
+	TCP(Transport Control Protocol)传输控制协议
+	UDP(User Datagram Protocol)用户数据报协议
+【7】UDP和TCP
+	共同点：同为传输层协议
+	不同点：
+		TCP：有连接，可靠
+		UDP：无连接，不保证可靠
+
+	TCP：（全双工）
+		TCP（即传输控制协议）：是一种面向连接的传输层协议，
+		它能提供高可靠性通信(即数据无误、数据无丢失、数据
+		无失序、数据无重复到达的通信)
+		适用情况：
+			适合于对传输质量要求较高，以及传输大量数据的通信。
+			在需要可靠数据传输的场合，通常使用TCP协议
+			MSN/QQ等即时通讯软件的用户登录账户管理相关的功能通常采用TCP协议
+			
+			TCP“三次握手”
+			
+	UDP：（全双工）
+		UDP（User Datagram Protocol）用户数据报协议，是不可靠
+		的无连接的协议。在数据发送前，因为不需要进行连接，所以
+		可以进行高效率的数据传输。
+		适用情况：
+			发送小尺寸数据（如对DNS服务器进行IP地址查询时）
+			在接收到数据，给出应答较困难的网络中使用UDP。（如：无线网络）
+			适合于广播/组播式通信中。
+			MSN/QQ/Skype等即时通讯软件的点对点文本通讯以及音视频通讯通常采用UDP协议
+			流媒体、VOD、VoIP、IPTV等网络多媒体服务中通常采用UDP方式进行实时数据传输
+【8】socket
+	是一个编程接口
+	是一种特殊的文件描述符 (everything in Unix is a file)
+	并不仅限于TCP/IP协议
+	面向连接 (Transmission Control Protocol - TCP/IP)、
+	无连接 (User Datagram Protocol -UDP 和 Inter-network Packet Exchange - IPX)
+	
+	在OSI模型中，主要位于会话层和传输层之间
+
+	类型：
+		流式套接字(SOCK_STREAM)
+			提供了一个面向连接、可靠的数据传输服务，数据无差错、无重复的发送且按发送顺序接收。内设置流量控制，避免数据流淹没慢的接收方。数据被看作是字节流，无长度限制。
+        --------> TCP协议
+		数据报套接字(SOCK_DGRAM)
+			提供无连接服务。数据包以独立数据包的形式被发送，不提供无差错保证，数据可能丢失或重复，顺序发送，可能乱序接收。
+		--------> UDP协议
+		原始套接字(SOCK_RAW)
+			可以对较低层次协议如IP、ICMP直接访问。
+【9】IP地址
+	IP地址是Internet中主机的唯一标识
+	Internet中的主机要与别的机器通信必须具有一个IP地址
+	IP地址为32位（IPv4）或者128位（IPv6）
+	每个数据包都必须携带目的IP地址和源IP地址，路由器依靠此信息为数据包选择路由
+	
+	表示形式：点分十进制
+	
+	IPV4一个四个字节，第一字节表示类型，后三个表示属于局域网的
+	IP地址的分类（根据第一个字节区分）
+	A类 0000 0000 - 0111 1111  0.0.0.0 - 127.255.255.255  
+	B类 1000 0000 - 1011 1111  128.0.0.0 - 191.255.255.255
+	C类 1100 0000 - 1101 1111  192.0.0.0 - 223.255.255.255
+	D类 1110 0000 - 1110 1111  224.0.0.0 - 239.255.255.255  表示组播地址
+	E类 1111 0000 - 1111 1111  240.0.0.0 - 255.255.255.255  表示保留测试
+	
+	127.x.x.x 自己的IP地址
+	
+	每一个网段下特殊的IP地址
+	192.168.3.0 表示网段
+	192.168.3.255 是给网段下的广播地址
+	
+	最大连接数 = 254 
+	
+	inet_addr()
+	编程时需要将点分十进制IP地址转换成网络能够识别的
+	in_addr_t inet_addr(const char *strptr);
+	
+	inet_addr("192.168.0.25");
+	
+	inet_ntoa()
+	将32位网络字节序二进制地址转换成点分十进制的字符串。 
+	char *inet_ntoa(stuct in_addr inaddr);	
+【10】端口号（vi /etc/services 查看端口号）
+	为了区分一台主机接收到的数据包应该转交给哪个进程来进行处理，使用端口号来区别
+	众所周知端口：1~1023（1~255之间为众所周知端口，256~1023端口通常由UNIX系统占用）
+	已登记端口：1024~49151
+	动态或私有端口：49152~65535
+
+	一般使用：8888 9999 10000 10001 
+【11】字节序
+	不同类型CPU的主机中，内存存储多字节整数序列有两种方法，称为主机字节序(HBO)：
+	小端序（little-endian） - 低序字节存储在低地址
+	将低字节存储在起始地址，称为“Little-Endian”字节序，Intel、AMD等采用的是这种方式；
+	大端序（big-endian）- 高序字节存储在低地址
+	将高字节存储在起始地址，称为“Big-Endian”字节序，由ARM、Motorola等所采用
+
+	***网络中传输的数据必须按网络字节序，即大端字节序
+
+	实现主机字节序与网络字节序之间的转化（输入端口号的时候需要用）
+	#include <arpa/inet.h>
+
+	从主机转化成网络
+    uint32_t htonl(uint32_t hostlong);
+    uint16_t htons(uint16_t hostshort);
+	从网络转化成柱基础
+    uint32_t ntohl(uint32_t netlong);
+    uint16_t ntohs(uint16_t netshort);	
+	
+	将字符串转化成整型数据
+	atoi( )
+*************tcp编程***************
+【1】流程
+	举例：
+	买张卡
+	买个手机
+	卡和手机必须匹配
+	将卡和手机绑定
+	将手机设置为非飞行模式
+	进行通信
+	
+	服务器端：
+	创建套接字 --- socket( )
+	填充网络信息结构体 --- sockaddr_in
+	将套接字与IP地址和端口号绑定 --- bind( )
+	将套接字设置为监听状态 --- listen( )
+	阻塞等待客户端的连接请求 --- accept( )
+	进行通信 recv( )/send( )
+	
+	客户端：
+	创建套接字 --- socket( )
+	填充服务器网络信息结构体 --- sockaddr_in
+	发送客户端的连接请求 --- connect( )
+	进行通信 ---send( )/recv( )
+【2】socket( )
+	#include <sys/types.h>          /* See NOTES */
+    #include <sys/socket.h>
+
+    int socket(int domain, int type, int protocol);
+	功能：创建一个套接字，返回一个文件描述符
+	参数：
+		domain：通信域
+			AF_UNIX, AF_LOCAL  本地通信
+			AF_INET 网络通信	
+			AF_PACKET 底层通信
+		type：类型
+			SOCK_STREAN 流式套接字 ---> TCP
+			SOCK_DGRAM 数据报套接字 ---> UDP
+			SOCK_RAW 底层
+		protocol：协议
+			一般为0，表示为单一的协议
+	返回值：
+		成功：文件描述符
+		失败：-1
+	例子：
+		int sockfd;
+		sockfd = socket(AF_INET, SOCK_STREAM, 0);
+		if(sockfd < 0)
+		{
+			perror("fail to socket");
+			//return -1;
+			exit(0);
+		}
+【3】bind( )
+	#include <sys/types.h>          /* See NOTES */
+    #include <sys/socket.h>
+
+    int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+	功能：将套接字与网络信息结构体绑定
+	参数：
+		sockfd：文件描述符，socket的返回值
+		addr：网络信息结构体
+			通用结构体
+			struct sockaddr {
+               sa_family_t sa_family;  2bytes
+               char        sa_data[14];  14bytes
+			}
+			
+			真正使用的是sockaddr_in
+			#include <netinet/in.h>
+			struct sockaddr_in
+			{
+				__SOCKADDR_COMMON (sin_);  
+					===>  #define __SOCKADDR_COMMON(sa_prefix) \                                                                           
+								   sa_family_t sa_prefix##family
+								        ====>  在函数宏里面，##代表字符串的拼接
+										sa_family_t sin_family;  //地址族   2bytes
+																//AF_INET
+				in_port_t sin_port;         端口号  2bytes
+				struct in_addr sin_addr;    
+						===>
+							struct in_addr
+							{
+								in_addr_t s_addr;   IP地址   4bytes
+							}; 
+			
+				这个没有用，主要是为了保证和sockaddr保持大小一致
+				unsigned char sin_zero[sizeof (struct sockaddr) -
+						__SOCKADDR_COMMON_SIZE -
+						sizeof (in_port_t) -
+						sizeof (struct in_addr)];
+			};
+
+
+		addrlen：addr的大小
+	返回值：
+		成功：0
+		失败：-1
+	例子：
+		struct sockaddr_in server_addr;
+		server_addr.sin_family = AF_INET;
+		server_addr.sin_addr.s_addr = inet_addr("192.168.1.118");
+		server_addr.sin_port = htons(9999);
+		
+		if(bind(sockfd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr_in)) < 0)
+		{
+			perror("fail to bind");
+			exit(1);
+		}
+	
+【4】listen( )
+	#include <sys/types.h>          /* See NOTES */
+	#include <sys/socket.h>
+
+	int listen(int sockfd, int backlog);
+	功能：将套接字设置为监听状态
+	参数：
+		sockfd：文件描述符，socket的返回值
+		backlog：允许同时连接的客户端的个数
+	返回值：
+		成功：0
+		失败：-1
+	例子：
+		if(listen(sockfd, 5) < 0)
+		{
+			perror("listen");
+			exit(1);
+		}
+【5】accept( )
+	#include <sys/types.h>          /* See NOTES */
+    #include <sys/socket.h>
+
+    int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+	功能：阻塞等待客户端的连接请求
+	参数：
+		sockfd：文件描述符，socket的返回值
+		addr：客户端网络信息结构体（当客户端连接上时，会自动填充）
+		addrlen：addr的大小（注意是个指针）
+	返回值：
+		成功：新的文件描述符（此文件描述符标识唯一客户端，负责通信）
+		失败：-1
+	例子：
+		int acceptfd;
+		struct sockaddr_in client_addr;
+		socklen_t addrlen = sizeof(client_addr);
+		if((acceptfd = accept(sockfd, (struct sockaddr *)&client_addr, &addrlen)) < 0)
+		{
+			perror("fail to accept");
+			exit(1);
+		}
+【6】connect( )
+	#include <sys/types.h>          /* See NOTES */
+    #include <sys/socket.h>
+
+    int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+	功能：发送客户端的连接请求
+	参数：
+		sockfd：文件描述符，socket的返回值
+		addr：服务器网络信息结构体
+		addrlen：addr的大小
+	返回值：
+		成功：0
+		失败：-1
+【7】send( ) / recv( )
+	#include <sys/types.h>
+    #include <sys/socket.h>
+
+    ssize_t send(int sockfd, const void *buf, size_t len, int flags);
+	功能：发送数据
+	参数：
+		sockfd：文件描述符，
+			对于服务器，是accept的返回值
+			对于客户端，是socket的返回值
+		buf：发送的数据
+		len：buf的长度
+		flags：标志位
+			0 表示阻塞
+			MSG_DONTWAIT 非阻塞
+	返回值：
+		成功：发送的长度
+		失败：-1
+	例子：
+	if(send(acceptfd, buf, N, 0) < 0)
+	{
+		perror("fail to send");
+		exit(1);
+	}
+	
+	#include <sys/types.h>
+    #include <sys/socket.h>
+
+    ssize_t recv(int sockfd, void *buf, size_t len, int flags);
+	功能：接收数据
+	参数：
+		sockfd：文件描述符，
+			对于服务器，是accept的返回值
+			对于客户端，是socket的返回值
+		buf：接收的数据
+		len：buf的长度
+		flags：标志位
+			0 表示阻塞
+			MSG_DONTWAIT 非阻塞
+	返回值：
+		成功：接收的长度
+		失败：-1
+
+	练习：实现基于tcp的文件服务器
+		功能：
+			客户端可以查看服务器所在目录的所有文件名
+			客户端可以下载服务器所在目录的文件
+			客户端可以上传文件给服务器
+
+【8】UDP
+	流程：
+	服务器端：
+	创建套接字 ---> socket( )
+	填充网络信息结构体 ---> sockaddr_in
+	将套接字与IP地址和端口号绑定 ---> bind( )
+	进行通信 recvfrom( )/sendto( )
+	
+	客户端：
+	创建套接字 ---> socket( )
+	填充网络信息结构体 ---> sockaddr_in
+	进行通信 sendto( )/recvfrom( )	
+	
+	ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags, struct sockaddr *src_addr,  socklen_t *addrlen);
+
+	功能：接收数据并且可以得到发送方的ip和port
+	参数：	
+			sockfd， socket()的返回值
+			buf, 存放要接收的数据
+			len，指定要接收的字节个数
+			flags 标志位
+				0，阻塞接收
+				MSG_DONTWAIT 非阻塞接收
+			src_addr, 存放发送ip和port的结构体指针
+			addrlen, 指定的src_addr结构体的长度  
+
+	返回值：
+		成功：接收的字节个数；
+		失败， -1；对方关闭套接字，0；
+
+
+	ssize_t sendto(int sockfd, const void *buf, size_t len, int flags,
+                      const struct sockaddr *dest_addr, socklen_t addrlen);
+	功能：就是向指定的服务器发送数据     
+	参数：	
+			sockfd， socket()的返回值
+			buf, 存放要发送的数据
+			len，指定要发送的字节个数
+			flags 标志位 
+				0，阻塞发送
+				MSG_DONTWAIT 非阻塞发送
+			dest_addr, 指定的服务器ip和port的结构体指针
+			addrlen, 结构体长度
+	返回值：
+		成功：发送的字节个数， 
+		失败：-1
+	
+推荐书籍：
+	tcp/ip 详解 卷一 卷二 卷三
+	UNIX环境高级编程
+	UNIX网络编程 卷一 卷二
+	linux/unix系统编程手册	
+************************day_2*************************
+【1】I/O模型
+	阻塞I/O：
+		最常用、最简单、效率最低
+		阻塞I/O 模式是最普遍使用的I/O 模式，大部分程序使用的都是阻塞模式的I/O 。
+		缺省情况下，套接字建立后所处于的模式就是阻塞I/O 模式。
+		前面学习的很多读写函数在调用过程中会发生阻塞。
+		操作中的read、recv、recvfrom
+		写操作中的write、send
+		其他操作：accept、connect
+
+	非阻塞I/O：
+		可防止进程阻塞在I/O操作上，需要轮询，所以浪费时间，耗费资源比较多
+		
+	I/O 多路复用：
+		允许同时对多个I/O进行控制
+		
+	信号驱动I/O:
+		一种异步通信模型
+		
+【2】非阻塞I/O的实现 ----> fcntl
+	#include <unistd.h>
+    #include <fcntl.h>
+
+    int fcntl(int fd, int cmd, ... /* arg */ );	
+	功能：操作一个文件描述符
+	参数：
+		fd：文件描述符
+		cmd：具体操作选项
+			F_GETFL 获取文件状态标志位（void）
+			F_SETFL 设置文件状态标志位（long）
+		arg：可变参
+			void：省略
+			long：使用
+	返回值：
+		成功：
+			F_GETFL 返回标志位
+			F_SETFL 0
+		失败：-1
+		
+	注意：对寄存器或者位进行操作，一般执行读改写
+	
+	第一步：获取标志位
+	int flags;
+	if((flags = fcntl(0, F_GETFL)) < 0)
+	{
+		perror("fail to fcntl");
+		exit(1);
+	}
+	
+	第二步：修改标志位
+	flags = flags | O_NONBLOCK;
+	
+	将新的标志位写进去
+	if(fcntl(0, F_SETFL, flags) < 0)
+	{
+		perror("fail to fcntl");
+		exit(1);		
+	}
+【3】IO多路复用
+	应用程序中同时处理多路输入输出流，若采用阻塞模式，将得不到预期的目的；
+	若采用非阻塞模式，对多个输入进行轮询，但又太浪费CPU时间；
+	若设置多个进程，分别处理一条数据通路，将新产生进程间的同步与通信问题，使程序变得更加复杂；
+	比较好的方法是使用I/O多路复用。其基本思想是：
+	先构造一张有关描述符的表，然后调用一个函数。
+	当这些文件描述符中的一个或多个已准备好进行I/O时函数才返回。
+	函数返回时告诉进程那个描述符已就绪，可以进行I/O操作。
+	
+	
+    #include <sys/select.h>
+    #include <sys/time.h>
+    #include <sys/types.h>
+    #include <unistd.h>
+
+    int select(int nfds, fd_set *readfds, fd_set *writefds,
+               fd_set *exceptfds, struct timeval *timeout);
+	功能：同步IO操作，允许一个程序可以操作多个文件描述符，阻塞等待
+		  有文件描述符准备就绪，如果有文件描述符准备就绪，则函数立
+		  即返回，并执行相应的IO操作
+	参数：
+		nfds：最大的文件描述符加1
+		readfds：读文件描述符集合
+		writefds：写文件描述符集合
+		exceptfds：其他描述符集合（异常的）
+		timeout：超时
+	返回值：
+		成功：准备就绪的文件描述符的个数
+		失败：-1
+
+	void FD_SET(int fd, fd_set *set);
+	将文件描述符fd添加到集合set里面
+	
+    void FD_CLR(int fd, fd_set *set);
+	将文件描述符fd移除集合set
+	
+    int  FD_ISSET(int fd, fd_set *set);
+	判断文件描述符fd是否在集合set里面
+   
+    void FD_ZERO(fd_set *set);
+	清空集合set
+【4】服务器模型
+	在网络程序里面,通常都是一个服务器处理多个客户机。
+
+	为了处理多个客户机的请求, 服务器端的程序有不同的处理方式。
+
+	目前最常用的服务器模型. 
+		循环服务器:
+			循环服务器在同一个时刻只能响应一个客户端的请求 
+			TCP循环服务器
+			UDP循环服务器
+		并发服务器:
+			并发服务器在同一个时刻可以响应多个客户端的请求 
+			TCP并发服务器
+			UDP并发服务器  
+【5】如何实现TCP并发服务器
+	第一种：使用父子进程实现TCP并发服务器
+			void handler(int sig)
+			{
+				wait(NULL);
+			}
+			
+			socket()
+			sockaddr_in
+			bind()
+			listen()
+			signal(SIGCHLD, handler);
+			while(1)
+			{
+				accept()
+				pid = fork()
+				if(pid > 0)
+				{
+
+				}
+				if(pid == 0)
+				{
+					while(1)
+					{
+						recv()
+						send()
+					}
+				}
+			}
+	第二种：使用select函数实现并发	
+    #include <sys/select.h>
+    #include <sys/time.h>
+    #include <sys/types.h>
+    #include <unistd.h>
+
+    int select(int nfds, fd_set *readfds, fd_set *writefds,
+               fd_set *exceptfds, struct timeval *timeout);
+	功能：同步IO操作，允许一个程序可以操作多个文件描述符，阻塞等待
+		  有文件描述符准备就绪，如果有文件描述符准备就绪，则函数立
+		  即返回，并执行相应的IO操作
+	参数：
+		nfds：最大的文件描述符加1
+		readfds：读文件描述符集合
+		writefds：写文件描述符集合
+		exceptfds：其他描述符集合（异常的）
+		timeout：超时
+	返回值：
+		成功：准备就绪的文件描述符的个数
+		失败：-1
+
+	void FD_SET(int fd, fd_set *set);
+	将文件描述符fd添加到集合set里面
+	
+    void FD_CLR(int fd, fd_set *set);
+	将文件描述符fd移除集合set
+	
+    int  FD_ISSET(int fd, fd_set *set);
+	判断文件描述符fd是否在集合set里面
+   
+    void FD_ZERO(fd_set *set);
+	清空集合set
+		
+		
+	作业：基于UDP网络聊天室
+		功能：
+			客户端登录之后，其他在线的成员可以看到这个人登录了
+			客户端可以发送群发信息，出当前用户以外，其他在线人员都会收到
+			客户端退出时其他在线人员可以收到这个人退出的信息
+			服务器可以发送系统消息
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	
